@@ -15,7 +15,6 @@ export default defineConfig({
 				// Backend API Proxy
 				target: SERVER_ADDR,
 				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, '')
 			}
 		}
 	}

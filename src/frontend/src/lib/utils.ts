@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
+import { fetchApi } from "./api";
+import { myNotebooks, userData } from "./stores";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -54,3 +56,23 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+
+export function truncate(text: string, maxLen: number) {
+    return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
+}
+
+export async function fetchUserData() {
+    const response = await fetchApi("auth/users/me/");
+
+    if (response.ok) {
+        const data = await response.json();
+
+		userData.set(data["user"]);
+        myNotebooks.set(data["notebooks"]);
+	} else {
+        console.error(
+            `Failed to fetch user data (status: ${response.status} ${response.statusText})`
+        );
+    }
+}

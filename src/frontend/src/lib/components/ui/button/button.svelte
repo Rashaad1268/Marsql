@@ -19,6 +19,8 @@
 	type="button"
 	{...$$restProps}
 	on:click
+	on:mouseenter
+	on:mouseleave
 	on:keydown
 >
 	<slot />

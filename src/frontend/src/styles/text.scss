@@ -1,0 +1,18 @@
+@font-face {
+    font-family: roboto;
+    src: url("/fonts/roboto/Roboto-Regular.ttf");
+    font-style: normal;
+    font-weight: normal;
+}
+
+.link {
+    @apply text-blue-500;
+
+    &:hover {
+        @apply underline;
+    }
+
+    &.link-underline {
+        @apply underline;
+    }
+}
