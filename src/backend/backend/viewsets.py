@@ -8,6 +8,9 @@ class CustomViewSet(viewsets.ModelViewSet):
     partial_serializer: Optional[serializers.Serializer] = None
     full_serializer: Optional[serializers.Serializer] = None
 
+    def should_return_data(self):
+        return True
+
     def get_serializer_class(self):
         if self.partial_serializer is None or self.full_serializer is None:
             raise NotImplementedError(
@@ -25,6 +28,10 @@ class CustomViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         instance = self.perform_create(serializer)
+
+        if not self.should_return_data():
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         headers = self.get_success_headers(serializer.data)
         return Response(
             self.full_serializer(instance, context=self.get_serializer_context()).data,
@@ -43,6 +50,9 @@ class CustomViewSet(viewsets.ModelViewSet):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
+
+        if not self.should_return_data():
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(
             self.full_serializer(instance, context=self.get_serializer_context()).data

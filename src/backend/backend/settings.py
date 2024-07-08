@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "authentication.apps.AuthenticationConfig",
     "notebooks.apps.NotebooksConfig",
+    "chat.apps.ChatConfig",
 ]
 
 MIDDLEWARE = [

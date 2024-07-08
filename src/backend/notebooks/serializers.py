@@ -20,7 +20,14 @@ class NoteBookDBConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.NoteBookDBConfig
-        fields = ("db_type", "db_type_display", "db_name", "db_user", "db_host", "db_port")
+        fields = (
+            "db_type",
+            "db_type_display",
+            "db_name",
+            "db_user",
+            "db_host",
+            "db_port",
+        )
 
 
 class NoteBookCreateSerializer(serializers.ModelSerializer):
@@ -37,3 +44,14 @@ class NoteBookSerializer(NoteBookCreateSerializer):
 
     class Meta(NoteBookCreateSerializer.Meta):
         fields = ("id", "name", "creator", "created_at", "db_config")
+
+
+class NoteBookCellCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.NoteBookCell
+        fields = ("type", "content")
+
+
+class NoteBookCellSerializer(NoteBookCellCreateSerializer):
+    class Meta(NoteBookCellCreateSerializer.Meta):
+        fields = NoteBookCellCreateSerializer.Meta.fields + ("id", "notebook")

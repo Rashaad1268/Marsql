@@ -39,7 +39,7 @@ class NoteBookCell(models.Model):
         NoteBook, on_delete=models.CASCADE, related_name="cells"
     )
     type = models.PositiveSmallIntegerField(choices=CELL_TYPES)
-    content = models.TextField(max_length=2000)
+    content = models.TextField(max_length=2000, blank=True)
 
     def clean(self):
         if self.type == 1 and len(self.content) > 500:
@@ -47,8 +47,6 @@ class NoteBookCell(models.Model):
 
     def save(self, *args, **kwargs):
         if self.type == 2:
-            self.content = bleach.linkify(
-                bleach.clean(self.content, tags=set())  # Disallow html tags
-            )
+            self.content = bleach.clean(self.content, tags=set())  # Disallow html tags
 
         return super().save(*args, **kwargs)

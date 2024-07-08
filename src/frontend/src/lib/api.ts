@@ -1,5 +1,7 @@
-export const getCookie = (name: string) =>
-    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || null;
+export const getCookie = (name: string) => {
+    if (typeof document === "undefined") return null;
+    else return document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || null;
+};
 
 interface CustomRequestInit extends RequestInit {
     csrfToken?: string;

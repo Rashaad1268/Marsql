@@ -1,28 +1,28 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import { slide } from 'svelte/transition';
-	import type { FormErrorInterface, FormFieldInterface } from '.';
+    import { getContext } from "svelte";
+    import { slide } from "svelte/transition";
+    import type { FormErrorInterface, FormFieldInterface } from ".";
 
-	const fieldName = (getContext('fieldData') as FormFieldInterface).name;
-	let errorMessages: string[] = (getContext('formErrors') as FormErrorInterface)[fieldName];
+    const fieldName = (getContext("fieldData") as FormFieldInterface).name;
+    let errorMessages: string[] = (getContext("formErrors") as FormErrorInterface)[fieldName];
 </script>
 
 <div class="flex flex-col gap-2">
-	{#each errorMessages || [] as errorMsg (errorMsg)}
-		<div class="alert-error shadow-lg first-of-type:mt-5 last-of-type:mb-5" in:slide>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				class="stroke-current flex-shrink-0 h-6 w-6"
-				fill="none"
-				viewBox="0 0 24 24"
-				><path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-				/></svg
-			>
-			<span>{errorMsg}</span>
-		</div>
-	{/each}
+    {#each errorMessages || [] as errorMsg (errorMsg)}
+        <div class="alert-error shadow-lg first-of-type:mt-5 last-of-type:mb-5" in:slide>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current flex-shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                /></svg
+            >
+            <span>{errorMsg}</span>
+        </div>
+    {/each}
 </div>

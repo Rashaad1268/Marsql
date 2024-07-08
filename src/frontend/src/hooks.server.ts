@@ -25,4 +25,3 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     return await resolve(event);
 };
- 

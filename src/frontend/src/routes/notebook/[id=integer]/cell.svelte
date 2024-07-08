@@ -1,87 +1,108 @@
 <script lang="ts">
-	import { fetchApi } from '$lib/api';
-	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
-	import * as Tabs from '$lib/components/ui/tabs';
-	import { Textarea } from '$lib/components/ui/textarea';
+    import { fetchApi } from "$lib/api";
 
-	import type { CellDataInterface } from '$lib/types';
+    import type { CellDataInterface } from "$lib/types";
+    import { cellTypeChoices } from "$lib/utils";
+    import { noteBookCells } from "$lib/stores";
+    import { toast } from "svelte-sonner";
 
-	export let data: CellDataInterface;
+    import TextCell from "./textCell.svelte";
+    import CodeCell from "./codeCell.svelte";
 
-	async function runQuery() {
-		data.timesRun++;
+    export let cell: CellDataInterface;
+    cell.timesRun = 0;
 
-		if (!data.query.trim()) {
-			return;
-		}
+    let doCommitQuery = false;
 
-		const response = await fetchApi('/query', {
-			method: 'POST',
-			body: JSON.stringify({ query: data.query })
-		});
+    let cellUpdateTimeout: number;
+    let savingToast: string | number | undefined;
 
-		if (response.ok) {
-			data.output = await response.json();
-		}
-	}
+    async function runQuery() {
+        if (cell.type !== 1) return;
+
+        cell.timesRun!++;
+
+        if (!cell.content.trim()) {
+            return;
+        }
+
+        const response = await fetchApi(`notebooks/${cell.notebook}/cells/${cell.id}/run/`, {
+            method: "POST",
+            body: JSON.stringify({ commit: doCommitQuery })
+        });
+
+        if (response.ok) {
+            cell.output = await response.json();
+        }
+    }
+
+    function updateCellContent() {
+        fetchApi(`notebooks/${cell.notebook}/cells/${cell.id}/`, {
+            method: "PATCH",
+            body: JSON.stringify({ content: cell.content.trim() })
+        }).then((resp) => {
+            if (resp.ok) {
+                toast.dismiss(savingToast);
+                savingToast = undefined;
+                toast.success("Saved");
+            }
+        });
+    }
+
+    function handleCellUpdate(e: Event): void {
+        if (!e.isTrusted) return; // Not today spammers
+
+        if (savingToast === undefined) {
+            savingToast = toast.loading("Saving...", { duration: Number.POSITIVE_INFINITY });
+            toast;
+        }
+
+        if (cellUpdateTimeout) {
+            clearTimeout(cellUpdateTimeout);
+        }
+
+        cellUpdateTimeout = setTimeout(updateCellContent, 700);
+    }
+
+    $: currentCellType = cellTypeChoices.find((c) => c.value == cell.type)!;
+
+    async function updateCellType(value: any) {
+        const selectedValue = value.value as number;
+
+        // if the selected value is the current value, do nothing
+        if (selectedValue === cell.type) return;
+
+        const response = await fetchApi(`notebooks/${cell.notebook}/cells/${cell.id}/`, {
+            method: "PATCH",
+            body: JSON.stringify({ type: selectedValue })
+        });
+
+        if (response.ok) {
+            cell.type = selectedValue as CellDataInterface["type"];
+        }
+    }
+
+    async function deleteCell() {
+        const response = await fetchApi(`notebooks/${cell.notebook}/cells/${cell.id}/`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            noteBookCells.update((cells) => cells.filter((c) => c.id !== cell.id));
+        }
+    }
 </script>
 
-<Card.Root class="max-w-xl w-full">
-	<Card.Header class="px-4">
-		<div class="flex gap-2">
-			<div class="flex flex-col items-center justify-center gap-[2px]">
-				<button
-					class="flex items-center justify-center size-8 rounded-full p-2 bg-foreground mt-1"
-					on:click={runQuery}
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" class="fill-background" viewBox="0 0 384 512"
-						><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-							d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
-						/></svg
-					>
-				</button>
-				<span>{data.timesRun}</span>
-			</div>
-
-			<Textarea class="w-full font-mono mb-1" bind:value={data.query} />
-		</div>
-	</Card.Header>
-	<Card.Content class="px-4">
-		<Tabs.Root value="query_output" class="w-full">
-			<Tabs.List class="justify-between w-full [&>button]:flex-grow">
-				<Tabs.Trigger value="query_output">Output</Tabs.Trigger>
-				<Tabs.Trigger value="graph">Graph</Tabs.Trigger>
-			</Tabs.List>
-			<Tabs.Content value="query_output">
-				{#if data.output}
-					<Table.Root>
-						<Table.Caption>
-							<p>{data.output.status_message}</p>
-							<p>{data.output.rows_affected} rows affected</p>
-						</Table.Caption>
-						<Table.Header>
-							<Table.Row>
-								{#each data.output.columns as column}
-									<Table.Head>{column}</Table.Head>
-								{/each}
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{#each data.output.results as row}
-								<Table.Row>
-									{#each row as value}
-										<Table.Cell>{value}</Table.Cell>
-									{/each}
-								</Table.Row>
-							{/each}
-						</Table.Body>
-					</Table.Root>
-				{:else}
-					<h4 class="text-lg font-semibold text-center">No output</h4>
-				{/if}
-			</Tabs.Content>
-			<Tabs.Content value="graph">todo: implement graph</Tabs.Content>
-		</Tabs.Root>
-	</Card.Content>
-</Card.Root>
+{#if cell.type === 1}
+    <CodeCell
+        bind:cell
+        bind:doCommitQuery
+        {runQuery}
+        {handleCellUpdate}
+        {currentCellType}
+        {updateCellType}
+        {deleteCell}
+    />
+{:else}
+    <TextCell bind:cell {handleCellUpdate} {currentCellType} {updateCellType} {deleteCell} />
+{/if}

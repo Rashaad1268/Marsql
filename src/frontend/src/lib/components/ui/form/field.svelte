@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
+    import { setContext } from "svelte";
 
-	export let name: string;
+    export let name: string;
 
-	setContext('fieldData', { name });
+    setContext("fieldData", { name });
 </script>
 
 <div>
-	<slot />
+    <slot />
 </div>

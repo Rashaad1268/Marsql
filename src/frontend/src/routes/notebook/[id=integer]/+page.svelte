@@ -1,23 +1,32 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
+    import { onMount } from "svelte";
 
-	import type { CellDataInterface } from '$lib/types';
-	import Cell from './cell.svelte';
+    import Cell from "./cell.svelte";
 
-	let cells: CellDataInterface[] = [{ timesRun: 0, query: '' }];
+    import type { CellDataInterface } from "$lib/types";
+    import type { PageData } from "./$types";
+    import { fetchApi } from "$lib/api";
+    import { noteBookCells } from "$lib/stores";
+
+    export let data: PageData;
+
+    onMount(async () => {
+        const response = await fetchApi(`notebooks/${data.notebook.id}/cells/`);
+
+        if (response.ok) {
+            const cellsData = await response.json();
+
+            noteBookCells.set(cellsData);
+        }
+    });
 </script>
 
 <svelte:head>
-	<title>Marsql notebook</title>
+    <title>Marsql notebook</title>
 </svelte:head>
 
-<div class="grid place-items-center mt-6 mb-10">
-	<Button on:click={() => (cells = [...cells, { timesRun: 0, query: '' }])}>Add Cell</Button>
-</div>
-
-<div class="flex flex-col gap-2 items-center">
-	{#each cells as cellData}
-		<Cell bind:data={cellData} />
-	{/each}
+<div class="flex flex-col gap-8 items-center mb-32">
+    {#each $noteBookCells as cellData (cellData.id)}
+        <Cell bind:cell={cellData} />
+    {/each}
 </div>
