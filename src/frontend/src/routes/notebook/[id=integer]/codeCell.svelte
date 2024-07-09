@@ -13,15 +13,22 @@
     import { noteBookCells } from "$lib/stores";
     import { Button } from "$lib/components/ui/button";
     import { toast } from "svelte-sonner";
+    import { onMount } from "svelte";
 
     export let cell: CellDataInterface;
-    export let readOnly: boolean;
+    export let isMessageCell: boolean;
     export let doCommitQuery: boolean;
     export let runQuery: () => void;
     export let handleCellUpdate: (e: Event) => void;
     export let currentCellType: (typeof cellTypeChoices)[0];
     export let updateCellType: (value: any) => void;
     export let deleteCell: () => void;
+
+    onMount(() => {
+        if (isMessageCell) {
+            runQuery();
+        }
+    })
 </script>
 
 <Card.Root class="max-w-md md:max-w-lg lg:max-w-xl xl:max-w-3xl w-full">
@@ -46,8 +53,8 @@
                 </div>
 
                 <Textarea
-                    on:keypress={handleCellUpdate}
-                    on:paste={handleCellUpdate}
+                    on:input={handleCellUpdate}
+                    disabled={isMessageCell}
                     class="w-full font-mono mb-1"
                     bind:value={cell.content}
                 />
@@ -55,7 +62,7 @@
 
             <div class="flex items-center">
                 <Button
-                    disabled={readOnly}
+                    disabled={isMessageCell}
                     size="icon"
                     variant="outline"
                     class="mr-4"
@@ -73,7 +80,7 @@
 
                 <Select.Root
                     bind:selected={currentCellType}
-                    disabled={readOnly}
+                    disabled={isMessageCell}
                     onSelectedChange={updateCellType}
                 >
                     <Select.Trigger class="flex-1">
@@ -125,30 +132,39 @@
             </Tabs.List>
             <Tabs.Content value="query_output">
                 {#if cell.output}
-                    <Table.Root>
-                        <Table.Caption>
-                            <p>{cell.output.status_message}</p>
-                            <p>{cell.output.rows_affected} rows affected</p>
-                        </Table.Caption>
-                        <Table.Header>
-                            <Table.Row>
-                                {#each cell.output.columns as column (column)}
-                                    <Table.Head>{column}</Table.Head>
-                                {/each}
-                            </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                            {#each cell.output.results as row}
+                    {#if cell.output.status === "success"}
+                        <Table.Root>
+                            <Table.Caption>
+                                <p>{cell.output.status_message}</p>
+                                <p>
+                                    {cell.output.rows_affected} row{cell.output.rows_affected === 1
+                                        ? ""
+                                        : "s"} affected
+                                </p>
+                            </Table.Caption>
+                            <Table.Header>
                                 <Table.Row>
-                                    <!-- Can't use only the 'value' as the key
-					   Because duplicate values may exist -->
-                                    {#each row as value, idx (idx + value)}
-                                        <Table.Cell>{value}</Table.Cell>
+                                    {#each cell.output.columns as column (column)}
+                                        <Table.Head>{column}</Table.Head>
                                     {/each}
                                 </Table.Row>
-                            {/each}
-                        </Table.Body>
-                    </Table.Root>
+                            </Table.Header>
+                            <Table.Body>
+                                {#each cell.output.results as row}
+                                    <Table.Row>
+                                        <!-- Can't use only the 'value' as the key
+					   Because duplicate values may exist -->
+                                        {#each row as value, idx (idx + value)}
+                                            <Table.Cell>{value}</Table.Cell>
+                                        {/each}
+                                    </Table.Row>
+                                {/each}
+                            </Table.Body>
+                        </Table.Root>
+                    {:else}
+                        <h3 class="font-semibold text-xl my-2 text-red-300">Error</h3>
+                        <span class="font-mono text-sm">{cell.output.error_message}</span>
+                    {/if}
                 {:else}
                     <h4 class="text-lg font-semibold text-center">No output</h4>
                 {/if}

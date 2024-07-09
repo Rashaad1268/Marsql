@@ -56,6 +56,9 @@ def get_postgres_db_metadata(db_config):
 
 
 def run_postgres_query(*, db_conf: NoteBookDBConfig, query: str, do_commit: bool):
+    colnames = []
+    query_results = []
+
     with connect_postgres(db_conf) as conn:
         cursor = conn.cursor()
 

@@ -27,11 +27,12 @@ export interface CellDataInterface {
     type: 1 | 2;
     notebook: number;
     output?: {
+        status: "success" | "error",
+        error_message?: string, 
         columns: string[];
         results: Array<any>;
         rows_affected: number;
         status_message: string | null;
-        error?: string;
     };
 }
 
@@ -46,8 +47,13 @@ export interface ChatMessageInterface {
     notebook: number;
     author_type: MessageAuthorTypes;
     content: string;
-    created_at: string;
+    created_at: string | null; // if the created_at is null that means that the message is still being sent
     cell: CellDataInterface | null;
     attached_image: string | null;
     attached_file: string | null;
+}
+
+export interface PaginatorInterface<T> {
+    count: number;
+    results: Array<T>;
 }

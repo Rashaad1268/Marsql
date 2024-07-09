@@ -22,7 +22,6 @@
     export let currentCellType: (typeof cellTypeChoices)[0];
     export let updateCellType: (value: any) => void;
     export let deleteCell: () => void;
-    export let readOnly: boolean;
 
     let isEditingCell = false;
 </script>
@@ -33,8 +32,7 @@
             <div>
                 {#if isEditingCell}
                     <Textarea
-                        on:keypress={handleCellUpdate}
-                        on:paste={handleCellUpdate}
+                        on:input={handleCellUpdate}
                         on:focusout={() => (isEditingCell = false)}
                         class="w-full font-mono mb-1"
                         bind:value={cell.content}
@@ -53,13 +51,7 @@
             </div>
 
             <div class="flex items-center">
-                <Button
-                    disabled={readOnly}
-                    size="icon"
-                    variant="outline"
-                    class="mr-4"
-                    on:click={deleteCell}
-                >
+                <Button size="icon" variant="outline" class="mr-4" on:click={deleteCell}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="size-4 fill-red-600"
@@ -70,11 +62,7 @@
                     >
                 </Button>
 
-                <Select.Root
-                    bind:selected={currentCellType}
-                    disabled={readOnly}
-                    onSelectedChange={updateCellType}
-                >
+                <Select.Root bind:selected={currentCellType} onSelectedChange={updateCellType}>
                     <Select.Trigger class="flex-1">
                         <Select.Value placeholder="Cell type" />
                     </Select.Trigger>
