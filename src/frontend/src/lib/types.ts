@@ -40,3 +40,14 @@ export enum MessageAuthorTypes {
     user = 1,
     AI = 2,
 }
+
+export interface ChatMessageInterface {
+    id: number;
+    notebook: number;
+    author_type: MessageAuthorTypes;
+    content: string;
+    created_at: string;
+    cell: CellDataInterface | null;
+    attached_image: string | null;
+    attached_file: string | null;
+}

@@ -25,7 +25,7 @@
     <title>Marsql notebook</title>
 </svelte:head>
 
-<div class="flex flex-col gap-8 items-center mb-32">
+<div class="flex flex-col gap-8 items-center mb-32 mt-6">
     {#each $noteBookCells as cellData (cellData.id)}
         <Cell bind:cell={cellData} />
     {/each}

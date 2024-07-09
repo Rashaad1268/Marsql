@@ -10,6 +10,7 @@
     import CodeCell from "./codeCell.svelte";
 
     export let cell: CellDataInterface;
+    export let readOnly = false;
     cell.timesRun = 0;
 
     let doCommitQuery = false;
@@ -97,6 +98,7 @@
     <CodeCell
         bind:cell
         bind:doCommitQuery
+        {readOnly}
         {runQuery}
         {handleCellUpdate}
         {currentCellType}
@@ -104,5 +106,12 @@
         {deleteCell}
     />
 {:else}
-    <TextCell bind:cell {handleCellUpdate} {currentCellType} {updateCellType} {deleteCell} />
+    <TextCell
+        bind:cell
+        {readOnly}
+        {handleCellUpdate}
+        {currentCellType}
+        {updateCellType}
+        {deleteCell}
+    />
 {/if}

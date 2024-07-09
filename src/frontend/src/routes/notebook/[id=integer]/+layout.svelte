@@ -4,9 +4,10 @@
     import { Button } from "$lib/components/ui/button";
 
     import type { LayoutData } from "./$types";
-    import { invalidate, invalidateAll } from "$app/navigation";
+    import { invalidate } from "$app/navigation";
     import { fetchApi } from "$lib/api";
     import { noteBookCells } from "$lib/stores";
+    import { page } from "$app/stores";
 
     export let data: LayoutData;
 
@@ -56,17 +57,33 @@
                 </div>
 
                 <div class="flex flex-row gap-2 flex-wrap">
-                    <Button class="w-min" size="sm" variant="outline" on:click={handleCellCreate}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="fill-current size-4 mr-2"
-                            viewBox="0 0 448 512"
-                            ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                            /></svg
+                    {#if $page.url.pathname.includes("chat")}
+                        <Button
+                            class="w-min"
+                            size="sm"
+                            variant="outline"
+                            href="/notebook/{data.notebook.id}/"
                         >
-                        Create Cell
-                    </Button>
+                            View Cells
+                        </Button>
+                    {:else}
+                        <Button
+                            class="w-min"
+                            size="sm"
+                            variant="outline"
+                            on:click={handleCellCreate}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="fill-current size-4 mr-2"
+                                viewBox="0 0 448 512"
+                                ><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                                /></svg
+                            >
+                            Create Cell
+                        </Button>
+                    {/if}
 
                     <Button
                         class="w-min"
@@ -129,9 +146,7 @@
         <Resizable.Handle />
 
         <Resizable.Pane class="!overflow-auto">
-            <div class="px-6 pt-6">
-                <slot />
-            </div>
+            <slot />
         </Resizable.Pane>
     </Resizable.PaneGroup>
 </div>

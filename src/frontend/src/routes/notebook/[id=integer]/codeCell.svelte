@@ -15,10 +15,11 @@
     import { toast } from "svelte-sonner";
 
     export let cell: CellDataInterface;
+    export let readOnly: boolean;
     export let doCommitQuery: boolean;
     export let runQuery: () => void;
     export let handleCellUpdate: (e: Event) => void;
-    export let currentCellType: typeof cellTypeChoices[0];
+    export let currentCellType: (typeof cellTypeChoices)[0];
     export let updateCellType: (value: any) => void;
     export let deleteCell: () => void;
 </script>
@@ -53,7 +54,13 @@
             </div>
 
             <div class="flex items-center">
-                <Button size="icon" variant="outline" class="mr-4" on:click={deleteCell}>
+                <Button
+                    disabled={readOnly}
+                    size="icon"
+                    variant="outline"
+                    class="mr-4"
+                    on:click={deleteCell}
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="size-4 fill-red-600"
@@ -64,7 +71,11 @@
                     >
                 </Button>
 
-                <Select.Root bind:selected={currentCellType} onSelectedChange={updateCellType}>
+                <Select.Root
+                    bind:selected={currentCellType}
+                    disabled={readOnly}
+                    onSelectedChange={updateCellType}
+                >
                     <Select.Trigger class="flex-1">
                         <Select.Value placeholder="Cell type" />
                     </Select.Trigger>

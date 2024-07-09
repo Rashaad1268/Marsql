@@ -62,14 +62,17 @@ class ChatMessageViewSet(CustomViewSet):
 
             tool_results = []
             for tool_call in response.tool_calls:
-                # here is where you would call the tool recommended by the model, using the parameters recommended by the model
+                # here is where you would call the tool recommended by the model
+                # using the parameters recommended by the model
                 print(
                     f"= running tool {tool_call.name}, with parameters: {tool_call.parameters}"
                 )
-                if tool_call.name == "run_sql_query":
-                    query_generated = tool_call.parameters["query"]
 
                 output = functions_map[tool_call.name](**tool_call.parameters)
+
+                if tool_call.name == "run_sql_query" and output["status"] == "success":
+                    query_generated = tool_call.parameters["query"]
+
                 # store the output in a list
                 outputs = [output]
                 print(f"== tool results: {outputs}")
@@ -118,6 +121,7 @@ Make sure the table names and column names in your query reflect the table names
 You must understand the database schema when the table names and columns are provided as a list.
 From that you must understand which table is responsible for which and also understand the columns of each table.
 Also in your queries, make sure to limit the output rows to a maximum of 50.
+If you need more context or anything about the database or about the users query, just ask the user for more context
 
 The users schema is provided in the following format
 { // the database schema will be a dictionary, with the table names as the key and the columns as the value
