@@ -1,7 +1,6 @@
 <script lang="ts">
     import { fetchApi } from "$lib/api";
     import * as Card from "$lib/components/ui/card";
-    import * as Table from "$lib/components/ui/table";
     import * as Tabs from "$lib/components/ui/tabs";
     import { Textarea } from "$lib/components/ui/textarea";
     import * as Tooltip from "$lib/components/ui/tooltip";
@@ -10,10 +9,10 @@
 
     import type { CellDataInterface } from "$lib/types";
     import { cellTypeChoices } from "$lib/utils";
-    import { noteBookCells } from "$lib/stores";
     import { Button } from "$lib/components/ui/button";
-    import { toast } from "svelte-sonner";
     import { onMount } from "svelte";
+    import QueryOutput from "./queryOutput.svelte";
+    import QueryGraph from "./queryGraph.svelte";
 
     export let cell: CellDataInterface;
     export let isMessageCell: boolean;
@@ -25,13 +24,13 @@
     export let deleteCell: () => void;
 
     onMount(() => {
-        if (isMessageCell) {
+        if (isMessageCell && !cell.output) {
             runQuery();
         }
-    })
+    });
 </script>
 
-<Card.Root class="max-w-md md:max-w-lg lg:max-w-xl xl:max-w-3xl w-full">
+<Card.Root class="w-full">
     <Card.Header class="px-4">
         <div class="flex flex-col gap-2">
             <div class="flex gap-2">
@@ -128,48 +127,15 @@
         <Tabs.Root value="query_output" class="w-full">
             <Tabs.List class="justify-between w-full [&>button]:flex-grow">
                 <Tabs.Trigger value="query_output">Output</Tabs.Trigger>
-                <!-- <Tabs.Trigger value="graph">Graph</Tabs.Trigger> -->
+                <Tabs.Trigger value="graph">Graph</Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="query_output">
-                {#if cell.output}
-                    {#if cell.output.status === "success"}
-                        <Table.Root>
-                            <Table.Caption>
-                                <p>{cell.output.status_message}</p>
-                                <p>
-                                    {cell.output.rows_affected} row{cell.output.rows_affected === 1
-                                        ? ""
-                                        : "s"} affected
-                                </p>
-                            </Table.Caption>
-                            <Table.Header>
-                                <Table.Row>
-                                    {#each cell.output.columns as column (column)}
-                                        <Table.Head>{column}</Table.Head>
-                                    {/each}
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                {#each cell.output.results as row}
-                                    <Table.Row>
-                                        <!-- Can't use only the 'value' as the key
-					   Because duplicate values may exist -->
-                                        {#each row as value, idx (idx + value)}
-                                            <Table.Cell>{value}</Table.Cell>
-                                        {/each}
-                                    </Table.Row>
-                                {/each}
-                            </Table.Body>
-                        </Table.Root>
-                    {:else}
-                        <h3 class="font-semibold text-xl my-2 text-red-300">Error</h3>
-                        <span class="font-mono text-sm">{cell.output.error_message}</span>
-                    {/if}
-                {:else}
-                    <h4 class="text-lg font-semibold text-center">No output</h4>
-                {/if}
+                <QueryOutput {cell} />
             </Tabs.Content>
-            <Tabs.Content value="graph">todo: implement graph</Tabs.Content>
+
+            <Tabs.Content value="graph">
+                <QueryGraph {cell} />
+            </Tabs.Content>
         </Tabs.Root>
     </Card.Content>
 </Card.Root>

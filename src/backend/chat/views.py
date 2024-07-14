@@ -66,8 +66,8 @@ class ChatMessageViewSet(CustomViewSet):
         db_conf = notebook.db_config
 
         functions_map = {
-            "run_sql_query": lambda query, do_commit=False: postgres.run_postgres_query(
-                db_conf=db_conf, query=query, do_commit=do_commit
+            "run_sql_query": lambda query: postgres.run_postgres_query(
+                db_conf=db_conf, query=query, do_commit=False
             )
         }
 
@@ -215,11 +215,11 @@ tools = [
                 "type": "str",
                 "required": True,
             },
-            "do_commit": {
-                "description": "Whether to commit the database or not after running the query",
-                "type": "bool",
-                "required": False,
-            },
+            # "do_commit": {
+            #     "description": "Whether to commit the database or not after running the query",
+            #     "type": "bool",
+            #     "required": False,
+            # },
         },
     }
 ]

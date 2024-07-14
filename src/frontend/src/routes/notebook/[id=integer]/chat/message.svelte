@@ -1,6 +1,6 @@
 <script lang="ts">
     import { MessageAuthorTypes, type ChatMessageInterface } from "$lib/types";
-    import Cell from "../cell.svelte";
+    import Cell from "../cell/cell.svelte";
 
     import sanitizeHtml from "sanitize-html";
     import { marked } from "marked";

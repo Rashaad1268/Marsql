@@ -84,3 +84,7 @@ export const cellTypeChoices = [
     { value: 1, label: "SQL Code" },
     { value: 2, label: "Markdown" }
 ];
+
+export const dbTypes = [
+    {value: 1, label: "Postgresql"},
+]

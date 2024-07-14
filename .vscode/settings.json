@@ -1,9 +1,7 @@
 {
-    "editor.quickSuggestions": {
-        "strings": true
-      },
-    
-    "cSpell.words": [
-        "colnames"
-    ]
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+
+  "cSpell.words": ["colnames", "Marsql"]
 }

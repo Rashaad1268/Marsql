@@ -31,7 +31,7 @@ class NoteBookDBConfigSerializer(serializers.ModelSerializer):
 
 
 class NoteBookCreateSerializer(serializers.ModelSerializer):
-    db_config = NoteBookDBConfigCreateSerializer
+    db_config = NoteBookDBConfigCreateSerializer()
 
     class Meta:
         model = models.NoteBook

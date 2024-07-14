@@ -26,7 +26,7 @@
     let isEditingCell = false;
 </script>
 
-<Card.Root class="max-w-md md:max-w-lg lg:max-w-xl xl:max-w-3xl w-full">
+<Card.Root class="w-full">
     <Card.Header class="px-4 pt-4">
         <div class="flex flex-col gap-2">
             <div>

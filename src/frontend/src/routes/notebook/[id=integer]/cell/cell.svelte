@@ -94,23 +94,19 @@
     }
 </script>
 
-{#if cell.type === 1}
-    <CodeCell
-        bind:cell
-        bind:doCommitQuery
-        {isMessageCell}
-        {runQuery}
-        {handleCellUpdate}
-        {currentCellType}
-        {updateCellType}
-        {deleteCell}
-    />
-{:else}
-    <TextCell
-        bind:cell
-        {handleCellUpdate}
-        {currentCellType}
-        {updateCellType}
-        {deleteCell}
-    />
-{/if}
+<div class="max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl w-full">
+    {#if cell.type === 1}
+        <CodeCell
+            bind:cell
+            bind:doCommitQuery
+            {isMessageCell}
+            {runQuery}
+            {handleCellUpdate}
+            {currentCellType}
+            {updateCellType}
+            {deleteCell}
+        />
+    {:else}
+        <TextCell bind:cell {handleCellUpdate} {currentCellType} {updateCellType} {deleteCell} />
+    {/if}
+</div>

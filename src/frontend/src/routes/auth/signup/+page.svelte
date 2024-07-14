@@ -15,13 +15,21 @@
 
     const form = createForm();
 
+    let username: string;
     let email: string;
     let password: string;
+    let password2: string;
 
-    async function handleLogin() {
-        const response = await fetchApi("auth/login/", {
+    async function handleSignup() {
+        if (password !== password2) {
+            form.messages.set(["Passwords don't match"]);
+            return;
+        }
+
+        const response = await fetchApi("auth/signup/", {
             method: "POST",
             body: JSON.stringify({
+                username,
                 email,
                 password
             })
@@ -36,9 +44,9 @@
                 toast.error(`Error while fetching user data (${err})`);
             }
         } else {
-            form.setBackendErrors(await response.json())
+            form.setBackendErrors(await response.json());
         }
-    };
+    }
 </script>
 
 <svelte:head>
@@ -50,17 +58,29 @@
 <div class="login-form w-full h-full flex flex-col items-center">
     <Card.Root class="max-w-lg w-full p-10 bg-background/90">
         <Card.Header class="text-center">
-            <h1 class="font-bold text-4xl">Welcome back</h1>
-            <h3>Don't have an account? <a href="signup{nextUrl}" class="link">Signup</a></h3>
+            <h1 class="font-bold text-4xl">The journey begins...</h1>
+            <h3>Don't have an account? <a href="signup{nextUrl}" class="link">Login</a></h3>
         </Card.Header>
 
         <Card.Content>
-            <form class="flex flex-col gap-2" on:submit|preventDefault={handleLogin}>
-                <Field name="email">
-                    <FieldLabel>Email</FieldLabel>
+            <form class="flex flex-col gap-2" on:submit|preventDefault={handleSignup}>
+                <Field name="username">
+                    <FieldLabel for="username">Username</FieldLabel>
                     <Input
+                        id="username"
+                        bind:value={username}
+                        autocomplete="username"
+                        placeholder="Username"
+                        required
+                    />
+                    <FieldErrors />
+                </Field>
+
+                <Field name="email">
+                    <FieldLabel for="email">Email</FieldLabel>
+                    <Input
+                        id="email"
                         bind:value={email}
-                        name="email"
                         type="email"
                         autocomplete="email"
                         placeholder="Email"
@@ -73,11 +93,23 @@
                     <FieldLabel>Password</FieldLabel>
                     <Input
                         id="password"
-                        name="password"
                         type="password"
                         bind:value={password}
                         autocomplete="current-password"
                         placeholder="Password"
+                        required
+                    />
+                    <FieldErrors />
+                </Field>
+
+                <Field name="password2">
+                    <FieldLabel>Password (confirmation)</FieldLabel>
+                    <Input
+                        id="password2"
+                        type="password"
+                        bind:value={password2}
+                        autocomplete="current-password"
+                        placeholder="Password (again)"
                         required
                     />
                     <FieldErrors />

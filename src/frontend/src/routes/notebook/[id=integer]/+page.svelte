@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    import Cell from "./cell.svelte";
+    import Cell from "./cell/cell.svelte";
 
     import type { CellDataInterface } from "$lib/types";
     import type { PageData } from "./$types";
