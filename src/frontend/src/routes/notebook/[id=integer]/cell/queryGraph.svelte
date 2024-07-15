@@ -19,8 +19,8 @@
             labels: cell.output?.results.map((r) => r[0]),
             datasets: [
                 {
-                    label: cell.output?.columns[1],
-                    data: cell.output?.results.map((r) => r[1]),
+                    label: cell.output!.columns[1],
+                    data: cell.output!.results.map((r) => r[1]),
                     backgroundColor: [
                         "rgba(255, 134,159,0.4)",
                         "rgba(98,  182, 239,0.4)",
@@ -43,7 +43,7 @@
 
 {#if cell.output}
     {#key cell.output?.results}
-        <Pie  data={generateData()} options={{ responsive: true }} />
+        <Bar  data={generateData()} options={{ responsive: true }} />
     {/key}
 {:else}
     <p>No output</p>

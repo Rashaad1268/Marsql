@@ -55,7 +55,6 @@
 
         if (savingToast === undefined) {
             savingToast = toast.loading("Saving...", { duration: Number.POSITIVE_INFINITY });
-            toast;
         }
 
         if (cellUpdateTimeout) {

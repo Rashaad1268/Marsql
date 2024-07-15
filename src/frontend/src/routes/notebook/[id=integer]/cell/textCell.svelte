@@ -23,22 +23,24 @@
     export let updateCellType: (value: any) => void;
     export let deleteCell: () => void;
 
-    let isEditingCell = false;
+    let isEditingContent = false;
 </script>
 
 <Card.Root class="w-full">
     <Card.Header class="px-4 pt-4">
         <div class="flex flex-col gap-2">
             <div>
-                {#if isEditingCell}
+                {#if isEditingContent}
                     <Textarea
                         on:input={handleCellUpdate}
-                        on:focusout={() => (isEditingCell = false)}
+                        on:focusout={() => (isEditingContent = false)}
                         class="w-full font-mono mb-1"
                         bind:value={cell.content}
+                        autofocus
                     />
+                    <!-- Use autofocus so the textarea will be selected as soon as isEditingContent is true -->
                 {:else}
-                    <button class="pb-4 text-left w-full" on:click={() => (isEditingCell = true)}>
+                    <button class="pb-4 text-left w-full" on:click={() => (isEditingContent = true)}>
                         <Card.Root>
                             <Card.Header>
                                 <div class="prose prose-invert">
